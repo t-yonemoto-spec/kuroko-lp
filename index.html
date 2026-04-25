@@ -1,1 +1,575 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KUROKO — 飲食店の裏方、全部やります。</title>
+<meta property="og:title" content="KUROKO — 飲食店の裏方、全部やります。">
+<meta property="og:description" content="飲食店専用AI人材サービス。通帳を送るだけで経理完了。月3,480円から。3ヶ月無料体験中。">
+<meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🤖</text></svg>">
+<link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700;900&family=Bebas+Neue&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --white:#fffdf9;--black:#1a1a1a;--red:#e8321f;
+  --pink:#ffd6d0;--light:#fff5f3;--cream:#fef9f0;
+  --gold:#f5a623;--gray:#888;--border:#f0e0dc;
+}
+html{scroll-behavior:smooth}
+body{background:var(--white);color:var(--black);font-family:'Zen Maru Gothic',sans-serif;overflow-x:hidden}
 
+/* LOADER */
+.loader{position:fixed;inset:0;background:var(--white);z-index:9999;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:20px;transition:opacity 0.5s ease}
+.loader.hidden{opacity:0;pointer-events:none}
+.loader-logo{font-family:'Bebas Neue',sans-serif;font-size:64px;letter-spacing:8px;animation:logoPulse 1s ease-in-out infinite}
+.loader-logo span{color:var(--red)}
+.loader-sub{font-size:14px;color:var(--gray);animation:fadeInOut 1s ease-in-out infinite}
+.loader-bar{width:200px;height:3px;background:var(--border);border-radius:2px;overflow:hidden}
+.loader-fill{height:100%;background:var(--red);animation:loadFill 1.5s ease forwards}
+@keyframes logoPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
+@keyframes fadeInOut{0%,100%{opacity:0.5}50%{opacity:1)}}
+@keyframes loadFill{from{width:0}to{width:100%}}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(255,253,249,0.95);backdrop-filter:blur(12px);border-bottom:2px solid var(--border);padding:0 40px;height:64px;display:flex;align-items:center;justify-content:space-between}
+.logo{font-family:'Bebas Neue',sans-serif;font-size:32px;letter-spacing:5px}
+.logo span{color:var(--red)}
+.nav-cta{background:var(--red);color:#fff;border:none;padding:12px 28px;font-family:'Zen Maru Gothic',sans-serif;font-size:14px;font-weight:700;cursor:pointer;border-radius:50px;letter-spacing:1px;text-decoration:none;transition:all 0.3s;box-shadow:0 4px 15px rgba(232,50,31,0.3)}
+.nav-cta:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(232,50,31,0.4)}
+
+/* HERO */
+.hero{min-height:100vh;background:linear-gradient(135deg,#fff5f3 0%,#fef9f0 50%,#fff0f8 100%);display:grid;grid-template-columns:1fr 1fr;align-items:center;padding:100px 60px 60px;position:relative;overflow:hidden;gap:40px}
+.hero-badge{display:inline-block;background:var(--pink);color:var(--red);font-size:13px;font-weight:700;padding:6px 20px;border-radius:50px;margin-bottom:24px;letter-spacing:1px;animation:fadeInDown 0.6s ease both}
+.hero h1{font-size:clamp(32px,4vw,54px);font-weight:900;line-height:1.4;margin-bottom:16px;animation:fadeInUp 0.8s ease 0.2s both}
+.hero h1 em{font-style:normal;color:var(--red)}
+.hero-sub{font-size:16px;color:var(--gray);line-height:2;margin-bottom:36px;animation:fadeInUp 0.8s ease 0.4s both}
+.hero-sub strong{color:var(--black);font-weight:700}
+.hero-actions{display:flex;gap:16px;flex-wrap:wrap;align-items:center;animation:fadeInUp 0.8s ease 0.6s both}
+.btn-primary{background:var(--red);color:#fff;border:none;padding:18px 40px;font-family:'Zen Maru Gothic',sans-serif;font-size:16px;font-weight:700;cursor:pointer;border-radius:50px;letter-spacing:1px;text-decoration:none;display:inline-block;transition:all 0.3s;box-shadow:0 4px 20px rgba(232,50,31,0.3)}
+.btn-primary:hover{transform:translateY(-3px);box-shadow:0 8px 25px rgba(232,50,31,0.4)}
+.btn-outline{background:#fff;color:var(--black);border:2px solid var(--border);padding:16px 32px;font-size:15px;font-weight:500;cursor:pointer;border-radius:50px;transition:all 0.3s;text-decoration:none;display:inline-block}
+.btn-outline:hover{border-color:var(--red);color:var(--red);transform:translateY(-2px)}
+.hero-note{margin-top:16px;font-size:12px;color:var(--gray);animation:fadeInUp 0.8s ease 0.8s both}
+.hero-right{position:relative;display:flex;align-items:flex-end;justify-content:center}
+.hero-char{width:100%;max-width:420px;height:auto;filter:drop-shadow(0 20px 40px rgba(232,50,31,0.15));animation:heroFloat 3s ease-in-out infinite, slideInRight 0.8s ease 0.3s both}
+.hero-tag{position:absolute;background:#fff;border:2px solid var(--border);border-radius:20px;padding:10px 16px;font-size:13px;font-weight:700;box-shadow:0 4px 20px rgba(0,0,0,0.08);white-space:nowrap}
+.hero-tag1{top:5%;left:-20%;animation:tagFloat 2.5s ease-in-out infinite}
+.hero-tag2{top:35%;right:-15%;animation:tagFloat 2.5s ease-in-out 0.5s infinite}
+.hero-tag3{bottom:25%;left:-5%;animation:tagFloat 2.5s ease-in-out 1s infinite}
+
+/* AICHAN GUIDE - あいちゃんが走ってきてキャラを紹介するガイド */
+.aichan-guide{position:fixed;bottom:20px;right:20px;z-index:200;display:flex;flex-direction:column;align-items:flex-end;gap:8px;pointer-events:none}
+.aichan-guide-char{width:100px;height:auto;filter:drop-shadow(0 4px 12px rgba(232,50,31,0.2));transition:all 0.5s cubic-bezier(0.34,1.56,0.64,1);transform:translateX(150px)}
+.aichan-guide-char.visible{transform:translateX(0)}
+.aichan-guide-char.running{animation:charRun 0.3s ease-in-out infinite alternate}
+.aichan-bubble{background:#fff;border:2px solid var(--border);border-radius:20px 20px 4px 20px;padding:12px 16px;font-size:13px;font-weight:700;box-shadow:0 4px 20px rgba(0,0,0,0.1);max-width:220px;text-align:left;opacity:0;transform:translateY(10px);transition:all 0.4s ease;line-height:1.6;pointer-events:auto}
+.aichan-bubble.visible{opacity:1;transform:translateY(0)}
+.aichan-bubble::after{content:"";position:absolute;bottom:-10px;right:16px;border:5px solid transparent;border-top-color:var(--border)}
+
+@keyframes charRun{from{transform:translateX(0) rotate(-3deg)}to{transform:translateX(4px) rotate(3deg)}}
+@keyframes heroFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-14px)}}
+@keyframes tagFloat{0%,100%{transform:translateY(0) rotate(-1deg)}50%{transform:translateY(-8px) rotate(1deg)}}
+@keyframes fadeInDown{from{opacity:0;transform:translateY(-20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeInUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+@keyframes slideInRight{from{opacity:0;transform:translateX(60px)}to{opacity:1;transform:translateX(0)}}
+
+/* SCROLL ANIMATIONS */
+.reveal{opacity:0;transform:translateY(50px);transition:all 0.8s ease}
+.reveal.from-left{transform:translateX(-60px)}
+.reveal.from-right{transform:translateX(60px)}
+.reveal.pop{transform:scale(0.8)}
+.reveal.visible{opacity:1;transform:none}
+
+/* COUNTER */
+.counter{font-family:'Bebas Neue',sans-serif;font-size:inherit}
+
+/* SECTION */
+.section{padding:100px 60px;max-width:1200px;margin:0 auto}
+.sec-label{display:inline-block;background:var(--pink);color:var(--red);font-size:12px;font-weight:700;padding:4px 16px;border-radius:50px;margin-bottom:16px;letter-spacing:2px}
+.sec-title{font-size:clamp(28px,4vw,44px);font-weight:900;line-height:1.4;margin-bottom:16px}
+.sec-desc{font-size:15px;color:var(--gray);line-height:2;margin-bottom:48px;max-width:600px}
+
+/* STATS */
+.stats-bar{background:var(--red);padding:40px 60px}
+.stats-inner{max-width:1000px;margin:0 auto;display:grid;grid-template-columns:repeat(3,1fr);gap:20px;text-align:center}
+.stat-item{color:#fff}
+.stat-num{font-family:'Bebas Neue',sans-serif;font-size:56px;line-height:1;margin-bottom:4px}
+.stat-label{font-size:13px;opacity:0.8}
+
+/* OFFICE */
+.office-section{background:var(--cream);padding:80px 60px;text-align:center;overflow:hidden}
+.office-img{width:100%;max-width:900px;border-radius:24px;box-shadow:0 20px 60px rgba(0,0,0,0.12);margin:40px auto 0;display:block;transition:transform 0.5s ease}
+.office-img:hover{transform:scale(1.02)}
+
+/* PAIN */
+.pain-section{background:var(--light);padding:100px 60px}
+.pain-inner{max-width:1000px;margin:0 auto;text-align:center}
+.pain-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:48px}
+.pain-card{background:#fff;padding:32px 24px;border-radius:20px;text-align:left;border:2px solid var(--border);transition:all 0.3s;cursor:default}
+.pain-card:hover{border-color:var(--red);transform:translateY(-8px) rotate(-1deg);box-shadow:0 12px 40px rgba(232,50,31,0.12)}
+.pain-icon{font-size:36px;margin-bottom:14px;display:block;transition:transform 0.3s}
+.pain-card:hover .pain-icon{transform:scale(1.2) rotate(10deg)}
+.pain-title{font-size:16px;font-weight:700;margin-bottom:8px}
+.pain-desc{font-size:13px;color:var(--gray);line-height:1.8}
+
+/* COMPARISON */
+.compare-section{padding:100px 60px;background:var(--white)}
+.compare-inner{max-width:1000px;margin:0 auto}
+.compare-table{width:100%;border-collapse:separate;border-spacing:0;margin-top:48px;border-radius:24px;overflow:hidden;box-shadow:0 8px 40px rgba(0,0,0,0.08)}
+.compare-table th{padding:20px 24px;font-size:14px;font-weight:700;text-align:center}
+.compare-table th:first-child{text-align:left;background:#f8f8f8}
+.compare-table th.human{background:#f0f0f0;color:var(--gray)}
+.compare-table th.kuroko{background:var(--red);color:#fff}
+.compare-table td{padding:18px 24px;font-size:14px;border-bottom:1px solid var(--border);text-align:center}
+.compare-table td:first-child{text-align:left;font-weight:700;background:#fafafa}
+.compare-table td.human{color:var(--gray)}
+.compare-table td.kuroko{color:var(--red);font-weight:700}
+.compare-table tr:last-child td{border-bottom:none}
+.compare-table tr:hover td{background:rgba(232,50,31,0.03)}
+
+/* CHARACTERS */
+.chars-section{background:var(--black);padding:100px 60px;overflow:hidden}
+.chars-inner{max-width:1200px;margin:0 auto}
+.chars-header{text-align:center;margin-bottom:64px}
+.chars-header .sec-label{background:rgba(232,50,31,0.2);color:var(--red)}
+.chars-header .sec-title{color:#fff}
+.chars-header .sec-desc{color:rgba(255,255,255,0.5);margin:0 auto}
+.char-showcase{display:grid;grid-template-columns:1fr 1.3fr 1fr;gap:32px;align-items:end;margin-bottom:32px}
+.char-unit{text-align:center}
+.char-unit:hover .char-img{transform:translateY(-16px) scale(1.05)}
+.char-img{width:100%;max-width:260px;height:auto;filter:drop-shadow(0 10px 30px rgba(0,0,0,0.4));transition:transform 0.4s ease}
+.char-img.main{max-width:340px;filter:drop-shadow(0 10px 50px rgba(232,50,31,0.3))}
+.char-info{margin-top:16px}
+.char-name{font-family:'Bebas Neue',sans-serif;font-size:32px;letter-spacing:3px;color:#fff;margin-bottom:4px}
+.char-role{font-size:11px;letter-spacing:3px;color:var(--red);margin-bottom:10px;display:block}
+.char-catch{font-size:13px;color:rgba(255,255,255,0.5);line-height:1.8}
+.char-price{display:inline-block;margin-top:12px;background:rgba(245,166,35,0.2);color:var(--gold);font-weight:700;padding:6px 16px;border-radius:50px;font-size:14px}
+.char-free{display:inline-block;margin-top:12px;background:var(--gold);color:var(--black);font-weight:700;padding:6px 16px;border-radius:50px;font-size:14px}
+.coming-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:24px}
+.coming-card{background:#1a1a1a;padding:20px 16px;border-radius:16px;text-align:center;border:2px dashed #333;transition:all 0.3s;cursor:default}
+.coming-card:hover{border-color:var(--red);transform:translateY(-4px)}
+.coming-lock{font-size:20px;margin-bottom:6px}
+.coming-name{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:2px;color:#fff;margin-bottom:4px}
+.coming-label{font-size:10px;letter-spacing:2px;color:var(--gray)}
+
+/* CASE */
+.case-section{background:var(--cream);padding:100px 60px}
+.case-inner{max-width:1000px;margin:0 auto}
+.case-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:48px}
+.case-card{background:#fff;padding:36px;border-radius:24px;border:2px solid var(--border);transition:all 0.3s;position:relative;overflow:hidden}
+.case-card::before{content:"";position:absolute;top:0;left:0;right:0;height:4px;background:var(--red)}
+.case-card:hover{transform:translateY(-8px);box-shadow:0 16px 50px rgba(232,50,31,0.1)}
+.case-shop{font-size:13px;color:var(--gray);margin-bottom:8px;font-weight:700;letter-spacing:2px}
+.case-name{font-size:18px;font-weight:900;margin-bottom:20px}
+.case-quote{font-size:15px;line-height:1.9;color:var(--black);margin-bottom:20px;padding-left:16px;border-left:3px solid var(--red)}
+.case-tag{display:inline-block;background:var(--pink);color:var(--red);font-size:12px;font-weight:700;padding:4px 14px;border-radius:50px;margin-right:6px;margin-bottom:4px}
+.case-result{background:var(--light);padding:16px;border-radius:12px;margin-top:16px;font-size:13px;color:var(--gray);line-height:1.8}
+.case-result strong{color:var(--red);font-size:18px}
+
+/* FLOW */
+.flow-section{background:var(--light);padding:100px 60px}
+.flow-inner{max-width:800px;margin:0 auto}
+.flow-steps{display:flex;flex-direction:column;gap:16px;margin-top:48px}
+.flow-step{background:#fff;padding:28px 32px;border-radius:20px;display:grid;grid-template-columns:56px 1fr;gap:20px;align-items:start;border:2px solid var(--border);transition:all 0.3s}
+.flow-step:hover{border-color:var(--red);transform:translateX(12px);box-shadow:0 8px 30px rgba(232,50,31,0.1)}
+.flow-num{font-family:'Bebas Neue',sans-serif;font-size:44px;color:var(--red);line-height:1}
+.flow-title{font-size:17px;font-weight:700;margin-bottom:6px}
+.flow-desc{font-size:13px;color:var(--gray);line-height:1.8}
+.flow-tag{display:inline-block;margin-top:8px;background:var(--pink);color:var(--red);font-size:11px;font-weight:700;padding:3px 12px;border-radius:50px}
+
+/* PRICING */
+.pricing-section{padding:100px 60px}
+.pricing-inner{max-width:1100px;margin:0 auto;text-align:center}
+.price-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:48px;text-align:left}
+.price-card{background:var(--light);padding:44px 32px;border-radius:24px;border:2px solid var(--border);transition:all 0.3s}
+.price-card:hover{transform:translateY(-8px);box-shadow:0 16px 50px rgba(0,0,0,0.08)}
+.price-card.feat{background:var(--red);border-color:var(--red);color:#fff}
+.price-top{font-size:11px;letter-spacing:3px;color:var(--gray);margin-bottom:16px;display:block;font-weight:700}
+.price-card.feat .price-top{color:rgba(255,255,255,0.7)}
+.price-amount{font-family:'Bebas Neue',sans-serif;font-size:60px;line-height:1;margin-bottom:6px}
+.price-unit{font-size:13px;color:var(--gray);margin-bottom:28px;display:block}
+.price-card.feat .price-unit{color:rgba(255,255,255,0.7)}
+.price-list{list-style:none;font-size:13px;line-height:2.4;color:var(--gray)}
+.price-list li::before{content:"✓ ";color:var(--red);font-weight:700}
+.price-card.feat .price-list{color:rgba(255,255,255,0.8)}
+.price-card.feat .price-list li::before{color:rgba(255,255,255,0.9)}
+
+/* FAQ */
+.faq-section{background:var(--cream);padding:100px 60px}
+.faq-inner{max-width:800px;margin:0 auto}
+.faq-list{display:flex;flex-direction:column;gap:12px;margin-top:48px}
+.faq-item{background:#fff;border-radius:16px;border:2px solid var(--border);overflow:hidden;transition:all 0.3s}
+.faq-item:hover{border-color:var(--red)}
+.faq-q{padding:20px 24px;font-size:15px;font-weight:700;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:12px}
+.faq-q::after{content:"＋";color:var(--red);font-size:20px;flex-shrink:0;transition:transform 0.3s}
+.faq-item.open .faq-q::after{transform:rotate(45deg)}
+.faq-a{padding:0 24px;font-size:14px;color:var(--gray);line-height:1.9;max-height:0;overflow:hidden;transition:all 0.3s ease}
+.faq-item.open .faq-a{padding:0 24px 20px;max-height:300px}
+
+/* CTA */
+.cta-section{background:linear-gradient(135deg,#fff5f3,#fef9f0);padding:120px 60px;text-align:center;position:relative;overflow:hidden}
+.cta-section h2{font-size:clamp(28px,4vw,48px);font-weight:900;line-height:1.5;margin-bottom:16px;position:relative;z-index:1}
+.cta-section h2 em{font-style:normal;color:var(--red)}
+.cta-section p{font-size:16px;color:var(--gray);margin-bottom:48px;line-height:2;position:relative;z-index:1}
+.cta-note{margin-top:20px;font-size:13px;color:var(--gray);position:relative;z-index:1}
+
+footer{padding:48px 60px;border-top:2px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px}
+.footer-logo{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:4px}
+.footer-logo span{color:var(--red)}
+.footer-copy{font-size:12px;color:var(--gray)}
+.footer-sns{display:flex;gap:12px}
+.footer-sns a{width:36px;height:36px;border-radius:50%;background:var(--light);border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:16px;text-decoration:none;transition:all 0.3s}
+.footer-sns a:hover{background:var(--red);border-color:var(--red);transform:translateY(-2px)}
+
+@media(max-width:900px){
+  .hero{grid-template-columns:1fr;padding:100px 24px 60px;text-align:center}
+  .hero-right{display:none}
+  .pain-grid,.char-showcase,.price-grid,.case-grid{grid-template-columns:1fr}
+  .coming-grid{grid-template-columns:repeat(2,1fr)}
+  .stats-inner{grid-template-columns:1fr}
+  .section,.pain-section,.flow-section,.chars-section,.office-section,.cta-section,.compare-section,.case-section,.pricing-section,.faq-section{padding:60px 24px}
+  nav{padding:0 20px}
+  footer{padding:32px 24px;flex-direction:column;text-align:center}
+  .aichan-guide{display:none}
+}
+</style>
+</head>
+<body>
+
+<!-- LOADER -->
+<div class="loader" id="loader">
+  <div class="loader-logo">KUR<span>O</span>KO</div>
+  <div class="loader-sub">飲食店の裏方、全部やります。</div>
+  <div class="loader-bar"><div class="loader-fill"></div></div>
+</div>
+
+<!-- あいちゃんガイド（固定） -->
+<div class="aichan-guide" id="aichanGuide">
+  <div class="aichan-bubble" id="aichanBubble"></div>
+  <img src="https://raw.githubusercontent.com/t-yonemoto-spec/kuroko-lp/main/%E3%81%82%E3%81%84%E3%81%A1%E3%82%83%E3%82%93.png" alt="あいちゃん" class="aichan-guide-char" id="aichanChar">
+</div>
+
+<nav>
+  <div class="logo">KUR<span>O</span>KO</div>
+  <a href="https://line.me/R/ti/p/@182ynsym" class="nav-cta" target="_blank">🎉 あいちゃんを無料で雇用する</a>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div>
+    <div class="hero-badge">✨ 飲食店専用 AI人材サービス</div>
+    <h1>店長は、<em>売上</em>だけ<br>見てください。</h1>
+    <p class="hero-sub">経理・採用・SNS・チラシ…<br><strong>飲食店の裏方、全部やります。</strong><br>まずあいちゃんを無料で雇うところから🎉</p>
+    <div class="hero-actions">
+      <a href="https://line.me/R/ti/p/@182ynsym" class="btn-primary" target="_blank">🎉 あいちゃんを無料で雇用する</a>
+      <a href="#characters" class="btn-outline">チームを見る 👀</a>
+    </div>
+    <p class="hero-note">面談なし ／ 即日スタート ／ いつでも解雇OK</p>
+  </div>
+  <div class="hero-right">
+    <div style="position:relative;text-align:center">
+      <div class="hero-tag hero-tag1">📊 売上が見える化！</div>
+      <div class="hero-tag hero-tag2">💰 経費削減できた！</div>
+      <div class="hero-tag hero-tag3">📱 SNS毎日投稿✨</div>
+      <img src="https://raw.githubusercontent.com/t-yonemoto-spec/kuroko-lp/main/%E3%81%82%E3%81%84%E3%81%A1%E3%82%83%E3%82%93.png" alt="あいちゃん" class="hero-char">
+    </div>
+  </div>
+</div>
+
+<!-- STATS -->
+<div class="stats-bar">
+  <div class="stats-inner">
+    <div class="stat-item reveal"><div class="stat-num"><span class="counter" data-target="270">0</span>社+</div><div class="stat-label">経理代行実績</div></div>
+    <div class="stat-item reveal"><div class="stat-num">¥<span class="counter" data-target="3480">0</span>〜</div><div class="stat-label">月額費用（1キャラ）</div></div>
+    <div class="stat-item reveal"><div class="stat-num"><span class="counter" data-target="24">0</span>時間</div><div class="stat-label">対応時間</div></div>
+  </div>
+</div>
+
+<!-- OFFICE -->
+<div class="office-section reveal" data-guide="KUROKOのオフィスです！みんなあなたのお店のために働いてます😊">
+  <div class="sec-label">🏢 Our Office</div>
+  <div class="sec-title">あなたの会社の<br>バックオフィス、こんな感じ😊</div>
+  <img src="https://raw.githubusercontent.com/t-yonemoto-spec/kuroko-lp/main/ChatGPT%20Image%202026%E5%B9%B44%E6%9C%8824%E6%97%A5%2019_39_28.png" alt="KUROKOオフィス" class="office-img reveal">
+</div>
+
+<!-- PAIN -->
+<div class="pain-section" data-guide="こんなお悩み、ありませんか？😢">
+  <div class="pain-inner">
+    <div class="sec-label reveal">😰 お悩みはありませんか？</div>
+    <div class="sec-title reveal">深夜に一人で<br>帳簿つけてますか？</div>
+    <div class="pain-grid">
+      <div class="pain-card reveal" style="transition-delay:0.1s"><span class="pain-icon">😰</span><div class="pain-title">経理が追いつかない</div><div class="pain-desc">領収書が溜まる。帳簿をつける時間がない。</div></div>
+      <div class="pain-card reveal" style="transition-delay:0.2s"><span class="pain-icon">📱</span><div class="pain-title">SNSが止まってる</div><div class="pain-desc">更新したいけど時間も技術もない。</div></div>
+      <div class="pain-card reveal" style="transition-delay:0.3s"><span class="pain-icon">📄</span><div class="pain-title">チラシを作れない</div><div class="pain-desc">デザインも文章も苦手。でも販促はしたい。</div></div>
+      <div class="pain-card reveal" style="transition-delay:0.4s"><span class="pain-icon">💰</span><div class="pain-title">税金がわからない</div><div class="pain-desc">いくら来るか怖くて見たくない。</div></div>
+      <div class="pain-card reveal" style="transition-delay:0.5s"><span class="pain-icon">📊</span><div class="pain-title">数字を見る暇がない</div><div class="pain-desc">売上は把握してるつもり。でも原価率は？</div></div>
+      <div class="pain-card reveal" style="transition-delay:0.6s"><span class="pain-icon">👥</span><div class="pain-title">雇う余裕がない</div><div class="pain-desc">でも一人じゃ限界。誰かに任せたい。</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- COMPARISON -->
+<div class="compare-section" data-guide="人件費と比べてみてください！KUROKOがいかにお得かわかります💡">
+  <div class="compare-inner">
+    <div class="sec-label reveal">⚖️ 比較してみた</div>
+    <div class="sec-title reveal">人を雇う vs<br>KUROKOを雇う</div>
+    <table class="compare-table reveal">
+      <thead>
+        <tr>
+          <th style="background:#f8f8f8;text-align:left;padding:20px 24px"></th>
+          <th class="human">👤 人を雇った場合</th>
+          <th class="kuroko">🤖 KUROKOの場合</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>採用コスト</td><td class="human">¥20万〜50万円</td><td class="kuroko">¥0円 🎉</td></tr>
+        <tr><td>月額費用</td><td class="human">¥20万〜30万円</td><td class="kuroko">¥3,480円〜 🎉</td></tr>
+        <tr><td>育成期間</td><td class="human">3ヶ月〜1年</td><td class="kuroko">即日スタート 🎉</td></tr>
+        <tr><td>退職リスク</td><td class="human">あり（また採用コスト）</td><td class="kuroko">ゼロ 🎉</td></tr>
+        <tr><td>深夜・休日対応</td><td class="human">残業代が必要</td><td class="kuroko">24時間対応 🎉</td></tr>
+        <tr><td>社保・税金</td><td class="human">別途負担あり</td><td class="kuroko">不要 🎉</td></tr>
+        <tr><td>複数業務対応</td><td class="human">1人1業務が限界</td><td class="kuroko">何人でも即採用 🎉</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- CHARACTERS -->
+<div class="chars-section" id="characters" data-guide="KUROKOのメンバーを紹介します！みんなあなたのお店のために頑張ります✨">
+  <div class="chars-inner">
+    <div class="chars-header">
+      <div class="sec-label reveal">👩‍💼 Our Team</div>
+      <div class="sec-title reveal">あなたの会社の<br>バックオフィス。</div>
+      <div class="sec-desc reveal" style="margin:0 auto">必要な人だけ採用してね。1人からでも、全員でも😊</div>
+    </div>
+    <div class="char-showcase">
+      <div class="char-unit reveal from-left" data-guide="ケイリーは経理担当！領収書・売上・請求書などの写真をLINEで送るだけで帳簿が完成します📊">
+        <img src="https://raw.githubusercontent.com/t-yonemoto-spec/kuroko-lp/main/%E3%82%B1%E3%82%A4%E3%83%AA%E3%83%BC.png" alt="ケイリー" class="char-img">
+        <div class="char-info">
+          <div class="char-name">ケイリー</div>
+          <span class="char-role">経理担当</span>
+          <div class="char-catch">写真をLINEで送るだけで<br>帳簿が自動で完成✨<br><small style="font-size:11px;color:rgba(255,255,255,0.35);line-height:1.6;display:block;margin-top:8px">※複数店舗は店舗ごとに<br>個別のAI組織を作ります😊</small></div>
+          <div class="char-price">¥3,480 / 月</div>
+        </div>
+      </div>
+      <div class="char-unit reveal pop" data-guide="私がKUROKOの受付担当・あいちゃんです！なんでも聞いてください😊">
+        <img src="https://raw.githubusercontent.com/t-yonemoto-spec/kuroko-lp/main/%E3%81%82%E3%81%84%E3%81%A1%E3%82%83%E3%82%93.png" alt="あいちゃん" class="char-img main">
+        <div class="char-info">
+          <div class="char-name">あいちゃん</div>
+          <span class="char-role">受付 ／ なんでも相談</span>
+          <div class="char-catch">深夜でも即答😊<br>まず雇ってみてね！</div>
+          <div class="char-free">✅ 無料で雇用</div>
+        </div>
+      </div>
+      <div class="char-unit reveal from-right" data-guide="ミナとサナはチラシとSNS担当！写真送るだけで投稿してくれます📱">
+        <img src="https://raw.githubusercontent.com/t-yonemoto-spec/kuroko-lp/main/%E3%81%95%E3%81%AA%E3%83%BB%E3%81%BF%E3%81%AA.png" alt="ミナ・サナ" class="char-img">
+        <div class="char-info">
+          <div class="char-name">ミナ / サナ</div>
+          <span class="char-role">チラシ / SNS担当</span>
+          <div class="char-catch">販促・SNSを<br>丸ごと任せられる✨</div>
+          <div class="char-price">各 ¥3,480 / 月</div>
+        </div>
+      </div>
+    </div>
+    <div class="coming-grid">
+      <div class="coming-card reveal" style="transition-delay:0.1s"><div class="coming-lock">🔒</div><div class="coming-name">ハル</div><div class="coming-label">COMING SOON</div></div>
+      <div class="coming-card reveal" style="transition-delay:0.2s"><div class="coming-lock">🔒</div><div class="coming-name">未来くん</div><div class="coming-label">COMING SOON</div></div>
+      <div class="coming-card reveal" style="transition-delay:0.3s"><div class="coming-lock">🔒</div><div class="coming-name">コウジ</div><div class="coming-label">COMING SOON</div></div>
+      <div class="coming-card reveal" style="transition-delay:0.4s"><div class="coming-lock">🔒</div><div class="coming-name">ミキワメ</div><div class="coming-label">COMING SOON</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- CASE -->
+<div class="case-section" data-guide="実際に使ってくれた方の声です😊">
+  <div class="case-inner">
+    <div class="sec-label reveal">🌟 使ってみた実例</div>
+    <div class="sec-title reveal">こんな声が<br>届いてます😊</div>
+    <div class="case-grid">
+      <div class="case-card reveal from-left">
+        <div class="case-shop">大阪・焼肉店 ／ 1店舗経営</div>
+        <div class="case-name">田中オーナー（45歳）</div>
+        <div class="case-quote">「通帳のPDFを送ったら10分で帳簿が完成してた。最初は半信半疑やったけど、本当に全部やってくれる」</div>
+        <div><span class="case-tag">ケイリー愛用中</span><span class="case-tag">経理3時間→0分</span></div>
+        <div class="case-result">月の経理作業時間：<strong>0時間</strong>（以前は深夜3時間）</div>
+      </div>
+      <div class="case-card reveal from-right">
+        <div class="case-shop">京都・ラーメン店 ／ 2店舗経営</div>
+        <div class="case-name">山田オーナー（38歳）</div>
+        <div class="case-quote">「SNSを毎日更新できてなかったけど、写真送るだけで投稿してくれるから集客が全然違う。フォロワーが3倍になった」</div>
+        <div><span class="case-tag">サナ愛用中</span><span class="case-tag">フォロワー3倍</span></div>
+        <div class="case-result">Instagram フォロワー：<strong>3倍</strong>に増加（3ヶ月で）</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FLOW -->
+<div class="flow-section" data-guide="始め方はとってもシンプルです！">
+  <div class="flow-inner">
+    <div style="text-align:center">
+      <div class="sec-label reveal">🎯 How it works</div>
+      <div class="sec-title reveal">始め方は<br>シンプル😊</div>
+    </div>
+    <div class="flow-steps">
+      <div class="flow-step reveal" style="transition-delay:0.1s"><div class="flow-num">01</div><div><div class="flow-title">LINEを友だち追加</div><div class="flow-desc">あいちゃんが出迎えます。まず無料で雇用するところから！</div><span class="flow-tag">無料 ・ 30秒</span></div></div>
+      <div class="flow-step reveal" style="transition-delay:0.2s"><div class="flow-num">02</div><div><div class="flow-title">お困りごとを教える</div><div class="flow-desc">あいちゃんが診断して最適なキャラクターを提案します😊</div><span class="flow-tag">選択式 ・ 3分</span></div></div>
+      <div class="flow-step reveal" style="transition-delay:0.3s"><div class="flow-num">03</div><div><div class="flow-title">ケイリーを3ヶ月無料で雇用！</div><div class="flow-desc">カード登録するだけ。3ヶ月間は完全無料。いつでも解雇できます。</div><span class="flow-tag">3ヶ月無料🎉</span></div></div>
+      <div class="flow-step reveal" style="transition-delay:0.4s"><div class="flow-num">04</div><div><div class="flow-title">通帳を送るだけ</div><div class="flow-desc">領収書・売上・請求書などの写真をLINEに送るだけ。ケイリーが全部やってくれます✨</div><span class="flow-tag">LINEで完結</span></div></div>
+      <div class="flow-step reveal" style="transition-delay:0.5s"><div class="flow-num">05</div><div><div class="flow-title">仲間を増やす</div><div class="flow-desc">「SNSもお願いしたい」と感じたらLINEから追加雇用。どんどん楽になる😊</div><span class="flow-tag">追加はいつでも</span></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- PRICING -->
+<div class="pricing-section" data-guide="料金はとってもシンプル！全員雇っても月2万円の上限があります😊">
+  <div class="pricing-inner">
+    <div class="sec-label reveal">💴 Pricing</div>
+    <div class="sec-title reveal">全部入れても<br>月2万円😊</div>
+    <div class="price-grid">
+      <div class="price-card reveal from-left" style="transition-delay:0.1s">
+        <span class="price-top">まず試す</span>
+        <div class="price-amount">¥3,480</div>
+        <span class="price-unit">/ 月 ・ 1キャラクター</span>
+        <ul class="price-list"><li>1人だけ雇う</li><li>3ヶ月無料体験あり</li><li>いつでも解雇OK</li><li>あいちゃんは無料</li></ul>
+      </div>
+      <div class="price-card feat reveal pop" style="transition-delay:0.2s">
+        <span class="price-top">✨ おすすめ</span>
+        <div class="price-amount">¥7,800</div>
+        <span class="price-unit">/ 月 ・ 3人セット</span>
+        <ul class="price-list"><li>ケイリー＋ミナ＋サナ</li><li>約25%OFF</li><li>飲食店に必要な3本柱</li><li>3ヶ月無料トライアル</li></ul>
+      </div>
+      <div class="price-card reveal from-right" style="transition-delay:0.3s">
+        <span class="price-top">フルチーム</span>
+        <div class="price-amount">¥20,000</div>
+        <span class="price-unit">/ 月 ・ 全員雇用</span>
+        <ul class="price-list"><li>全員雇っても上限2万円</li><li>バックオフィス丸ごと</li><li>個別相談オプションあり</li><li>法人プランも対応</li></ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FAQ -->
+<div class="faq-section" data-guide="よくある質問をまとめました！他にも何かあればLINEで聞いてね😊">
+  <div class="faq-inner">
+    <div class="sec-label reveal">❓ FAQ</div>
+    <div class="sec-title reveal">よくある質問</div>
+    <div class="faq-list reveal">
+      <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">解約はいつでもできますか？</div><div class="faq-a">はい、いつでも解約できます。解約したい場合はLINEのリッチメニューから「解約・変更」を選んでください。月の途中でも解約できます。</div></div>
+      <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">MFクラウド会計を使っていなくても使えますか？</div><div class="faq-a">ケイリー（経理担当）はMFクラウド会計との連携が必要です。MFをお持ちでない場合は、まずあいちゃんにご相談ください。最適なプランをご提案します。</div></div>
+      <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">複数店舗でも使えますか？</div><div class="faq-a">はい、使えます！店舗ごとに管理することも、まとめて管理することも可能です。法人プランもご用意していますので、個別相談よりご連絡ください。</div></div>
+      <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">3ヶ月無料体験後は自動で課金されますか？</div><div class="faq-a">はい、3ヶ月の無料期間終了後は自動的に月額料金が発生します。継続を希望されない場合は、無料期間中にいつでも解約できます。</div></div>
+      <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">スマホだけで使えますか？</div><div class="faq-a">はい！LINEで全部完結するので、スマホだけでOKです。通帳PDFも写真で送っていただければ処理します。</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- CTA -->
+<div class="cta-section" id="cta" data-guide="まずは無料でお試しください！待ってます😊">
+  <h2>今日から、<em>裏方</em>を<br>雇ってみませんか？😊</h2>
+  <p>面談なし。書類なし。LINEを登録して、<br>あいちゃんに話しかけるだけ✨</p>
+  <a href="https://line.me/R/ti/p/@182ynsym" class="btn-primary" style="font-size:18px;padding:22px 60px;position:relative;z-index:1" target="_blank">🎉 あいちゃんを無料で雇用する</a>
+  <p class="cta-note">3ヶ月無料体験 ／ いつでも解雇OK ／ 面談なし・即日スタート</p>
+</div>
+
+<footer>
+  <div class="footer-logo">KUR<span>O</span>KO</div>
+  <div class="footer-sns">
+    <a href="#" title="Threads">🧵</a>
+    <a href="#" title="Instagram">📸</a>
+    <a href="#" title="TikTok">🎵</a>
+    <a href="#" title="YouTube">▶️</a>
+  </div>
+  <div class="footer-copy">
+    <p>by 株式会社 a.l.e. ／ 2026</p>
+    <p style="margin-top:4px">裏で全部やる。だから店長は売上だけ見ていい。</p>
+  </div>
+</footer>
+
+<script>
+// ローダー
+window.addEventListener('load', () => {
+  setTimeout(() => {
+    document.getElementById('loader').classList.add('hidden');
+    setTimeout(() => document.getElementById('loader').remove(), 500);
+  }, 1500);
+});
+
+// スクロールアニメーション
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+    }
+  });
+}, { threshold: 0.1 });
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+// カウントアップ
+function animateCounter(el) {
+  const target = parseInt(el.dataset.target);
+  const duration = 1500;
+  const step = target / (duration / 16);
+  let current = 0;
+  const timer = setInterval(() => {
+    current = Math.min(current + step, target);
+    el.textContent = Math.floor(current).toLocaleString();
+    if (current >= target) clearInterval(timer);
+  }, 16);
+}
+
+const counterObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      animateCounter(entry.target);
+      counterObserver.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.5 });
+document.querySelectorAll('.counter').forEach(el => counterObserver.observe(el));
+
+// あいちゃんガイド
+const aichanChar = document.getElementById('aichanChar');
+const aichanBubble = document.getElementById('aichanBubble');
+let currentGuide = '';
+let guideTimeout;
+
+const guideObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      const guide = entry.target.dataset.guide;
+      if (guide && guide !== currentGuide) {
+        currentGuide = guide;
+        showGuide(guide);
+      }
+    }
+  });
+}, { threshold: 0.3 });
+
+document.querySelectorAll('[data-guide]').forEach(el => guideObserver.observe(el));
+
+function showGuide(text) {
+  aichanChar.classList.add('running');
+  aichanChar.classList.add('visible');
+  
+  setTimeout(() => {
+    aichanChar.classList.remove('running');
+    aichanBubble.textContent = text;
+    aichanBubble.classList.add('visible');
+    
+    clearTimeout(guideTimeout);
+    guideTimeout = setTimeout(() => {
+      aichanBubble.classList.remove('visible');
+    }, 4000);
+  }, 300);
+}
+
+// FAQ
+function toggleFaq(el) {
+  const item = el.parentElement;
+  item.classList.toggle('open');
+}
+</script>
+</body>
+</html>
