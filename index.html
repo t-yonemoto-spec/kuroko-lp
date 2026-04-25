@@ -39,7 +39,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(255,253,249,
 .nav-cta:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(232,50,31,0.4)}
 
 /* HERO */
-.hero{min-height:100vh;background:linear-gradient(135deg,#fff5f3 0%,#fef9f0 50%,#fff0f8 100%);display:grid;grid-template-columns:1fr 1fr;align-items:center;padding:100px 60px 60px;position:relative;overflow:hidden;gap:40px}
+.hero{min-height:100vh;background:linear-gradient(135deg,#fff5f3 0%,#fef9f0 50%,#fff0f8 100%);display:flex;align-items:center;justify-content:center;padding:100px 60px 60px;position:relative;overflow:hidden}
 .hero-badge{display:inline-block;background:var(--pink);color:var(--red);font-size:13px;font-weight:700;padding:6px 20px;border-radius:50px;margin-bottom:24px;letter-spacing:1px;animation:fadeInDown 0.6s ease both}
 .hero h1{font-size:clamp(32px,4vw,54px);font-weight:900;line-height:1.4;margin-bottom:16px;animation:fadeInUp 0.8s ease 0.2s both}
 .hero h1 em{font-style:normal;color:var(--red)}
@@ -272,7 +272,7 @@ footer{padding:48px 60px;border-top:2px solid var(--border);display:flex;justify
       <div class="hero-tag hero-tag1">📊 売上が見える化！</div>
       <div class="hero-tag hero-tag2">💰 経費削減できた！</div>
       <div class="hero-tag hero-tag3">📱 SNS毎日投稿✨</div>
-      <img src="https://raw.githubusercontent.com/t-yonemoto-spec/kuroko-lp/main/%E3%81%82%E3%81%84%E3%81%A1%E3%82%83%E3%82%93.png" alt="あいちゃん" class="hero-char">
+
     </div>
   </div>
 </div>
@@ -484,6 +484,11 @@ footer{padding:48px 60px;border-top:2px solid var(--border);display:flex;justify
   <div class="footer-copy">
     <p>by 株式会社 a.l.e. ／ 2026</p>
     <p style="margin-top:4px">裏で全部やる。だから店長は売上だけ見ていい。</p>
+    <div style="margin-top:12px;display:flex;gap:16px;flex-wrap:wrap">
+      <a href="/kuroko_legal.html" style="font-size:12px;color:#888;text-decoration:none;border-bottom:1px solid #ddd">利用規約</a>
+      <a href="/kuroko_legal.html#privacy" style="font-size:12px;color:#888;text-decoration:none;border-bottom:1px solid #ddd">プライバシーポリシー</a>
+      <a href="/kuroko_legal.html#data" style="font-size:12px;color:#888;text-decoration:none;border-bottom:1px solid #ddd">データ利用同意</a>
+    </div>
   </div>
 </footer>
 
